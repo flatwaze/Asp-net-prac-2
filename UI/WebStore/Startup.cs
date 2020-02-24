@@ -63,7 +63,7 @@ namespace WebStore
             );
 
 
-            services.AddScoped<IHttpContextAccessor, HttpContextAccessor>();
+            /*services.AddScoped<IHttpContextAccessor, HttpContextAccessor>();*/
             services.AddScoped<ICartService, CookieCartService>();
         }
 
