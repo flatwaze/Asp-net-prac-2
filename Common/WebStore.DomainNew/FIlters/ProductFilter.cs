@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace WebStore.DomainNew.FIlters
+namespace WebStore.DomainNew.Filters
 {
     public class ProductFilter
     {
