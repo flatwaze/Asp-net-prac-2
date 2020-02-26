@@ -6,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using WebStore.Interfaces.API;
 using WebStore.Clients.Values;
 using Microsoft.Extensions.Hosting;
+using WebStore.Interfaces.Services;
+using WebStore.Services.Implementations;
 
 namespace WebStore.ServiceHosting
 {
@@ -21,6 +23,7 @@ namespace WebStore.ServiceHosting
         {
             services.AddControllers();
             services.AddScoped<IValuesService, ValuesClient>();
+            services.AddSingleton<IEmployeesService, InMemoryEmployeesService>();
             services.AddMvc();
         }
 
