@@ -6,10 +6,10 @@ using WebStore.DomainNew.Entities;
 using WebStore.DomainNew.Filters;
 using WebStore.Interfaces.Services;
 
-namespace WebStore.Services.Implementations
+/*namespace WebStore.Services.Implementations
 {
-    public class InMemoryProductService : IProductService
     {
+    public class InMemoryProductService{
         private readonly List<Category> _categories;
         private readonly List<Brand> _brands;
         private readonly List<Product> _products;
@@ -432,3 +432,4 @@ namespace WebStore.Services.Implementations
 
     }
 }
+*/

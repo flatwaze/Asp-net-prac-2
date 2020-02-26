@@ -14,6 +14,7 @@ using WebStore.Interfaces.Services;
 using WebStore.Services.Implementations;
 using WebStore.Interfaces.API;
 using WebStore.Clients.Values;
+using WebStore.Clients.Employees;
 
 namespace WebStore
 {
@@ -38,7 +39,7 @@ namespace WebStore
             services.AddDbContext<WebStoreContext>(x => x
                 .UseSqlServer(_configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddSingleton<IEmployeesService, InMemoryEmployeesService>();
+            services.AddSingleton<IEmployeesService, EmployeesClient>();
             services.AddScoped<IProductService, SqlProductService>();
             services.AddScoped<IOrdersService, SqlOrdersService>();
             services.AddSingleton<IValuesService, ValuesClient>();
@@ -67,7 +68,7 @@ namespace WebStore
             services.AddScoped<ICartService, CookieCartService>();
         }
 
-        
+
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -108,10 +109,10 @@ namespace WebStore
                 });
             });
 
-                app.Run(async (context) =>
-            {
-                await context.Response.WriteAsync("No handler for request..");
-            });
+            app.Run(async (context) =>
+        {
+            await context.Response.WriteAsync("No handler for request..");
+        });
         }
 
         private void UseMiddlewareSample(IApplicationBuilder app)

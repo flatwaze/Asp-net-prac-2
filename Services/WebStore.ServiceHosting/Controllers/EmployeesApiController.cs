@@ -29,7 +29,7 @@ namespace WebStore.ServiceHosting.Controllers
         public void Commit() => _EmployeesService.Commit();
 
         [HttpDelete("{id}")]
-        public void Delete(int id) => _EmployeesService.Delete(id);
+        public bool Delete(int id) => _EmployeesService.Delete(id);
 
 
     }
