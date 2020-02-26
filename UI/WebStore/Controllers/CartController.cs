@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using WebStore.DomainNew.DTO.Orders;
 using WebStore.Interfaces.Services;
 using WebStore.Models;
 
@@ -55,27 +56,34 @@ namespace WebStore.Controllers
             return Redirect(returnUrl);
         }
 
-        /// создание заказа
         [HttpPost, ValidateAntiForgeryToken]
-        public IActionResult CheckOut(OrderViewModel model)
+        public IActionResult CheckOut(OrderViewModel Model, [FromServices] IOrdersService OrderService)
         {
-            if (ModelState.IsValid)
-            {
-                var orderResult = _ordersService
-                    .CreateOrder(model, _cartService.TransformCart(), User.Identity.Name);
+            if (!ModelState.IsValid)
+                return View(nameof(Details), new DetailsViewModel
+                {
+                    CartViewModel = _cartService.TransformCart(),
+                    OrderViewModel = Model
+                });
 
-                _cartService.RemoveAll();
-
-                return RedirectToAction("OrderConfirmed", new { id = orderResult.Id });
-            }
-            
-            var detailsModel = new OrderDetailsViewModel()
+            var create_order_model = new CreateOrderModel
             {
-                CartViewModel = _cartService.TransformCart(),
-                OrderViewModel = model
+                OrderViewModel = Model,
+                OrderItems = _cartService.TransformCart().Items
+                   .Select(item => new OrderItemDTO
+                   {
+                       Id = item.Key.Id,
+                       Price = item.Key.Price,
+                       Quantity = item.Value
+                   })
+                   .ToList()
             };
-         
-            return View("Details", detailsModel);
+
+            var order = OrderService.CreateOrder(create_order_model, User.Identity.Name);
+
+            _cartService.RemoveAll();
+
+            return RedirectToAction("OrderConfirmed", new { id = order.Id });
         }
 
         public IActionResult OrderConfirmed(int id)

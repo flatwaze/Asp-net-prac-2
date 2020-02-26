@@ -1,87 +1,78 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using WebStore.DAL;
+using WebStore.DomainNew.DTO.Orders;
 using WebStore.DomainNew.Entities;
-using WebStore.Interfaces.Services;
 using WebStore.Models;
+using WebStore.Interfaces.Services;
+using WebStore.DAL;
 
-namespace WebStore.Services.Implementations
+namespace WebStore.Services.Product
 {
-    public class SqlOrdersService : IOrdersService
+    public class SqlOrderService : IOrdersService
     {
-        private readonly WebStoreContext _context;
-        private readonly UserManager<User> _userManager;
+        private readonly WebStoreContext _db;
+        private readonly UserManager<User> _UserManager;
 
-        public SqlOrdersService(WebStoreContext context, UserManager<User> userManager)
+        public SqlOrderService(WebStoreContext db, UserManager<User> UserManager)
         {
-            _context = context;
-            _userManager = userManager;
+            _db = db;
+            _UserManager = UserManager;
         }
 
-        public IEnumerable<Order> GetUserOrders(string userName)
-        {
-            return _context
-                .Orders
-                .Include("User")
-                .Include(x => x.OrderItems)
-                .Where(x => x.User.UserName == userName)
-                .ToList();
-        }
+        public IEnumerable<OrderDTO> GetUserOrders(string UserName) => _db.Orders
+           .Include(order => order.User)
+           .Include(order => order.OrderItems)
+           .Where(order => order.User.UserName == UserName)
+           .ToArray()
+           .Select(o => o.ToDTO());
 
-        public Order GetOrderById(int id)
-        {
-            return _context
-                .Orders
-                .Include("User")
-                .Include(x => x.OrderItems)
-                .FirstOrDefault(x => x.Id == id)
-                ;
-        }
+        public OrderDTO GetOrderById(int id) =>
+            _db.Orders
+               .Include(order => order.OrderItems)
+               .FirstOrDefault(order => order.Id == id)
+               .ToDTO();
 
-        public Order CreateOrder(OrderViewModel orderModel, CartViewModel transformCart, string userName)
+        public OrderDTO CreateOrder(CreateOrderModel OrderModel, string UserName)
         {
-            var user = _userManager.FindByNameAsync(userName).Result;
+            var user = _UserManager.FindByNameAsync(UserName).Result;
 
-            using (var transaction = _context.Database.BeginTransaction())
+            using (var transaction = _db.Database.BeginTransaction())
             {
-                var order = new Order()
+                var order = new Order
                 {
-                    Address = orderModel.Address,
-                    Name = orderModel.Name,
-                    Date = DateTime.Now,
-                    Phone = orderModel.Phone,
-                    User = user
+                    Name = OrderModel.OrderViewModel.Name,
+                    Address = OrderModel.OrderViewModel.Address,
+                    Phone = OrderModel.OrderViewModel.Phone,
+                    User = user,
+                    Date = DateTime.Now
                 };
 
-                _context.Orders.Add(order);
+                _db.Orders.Add(order);
 
-                foreach (var item in transformCart.Items)
+                foreach (var item in OrderModel.OrderItems)
                 {
-                    var productVm = item.Key;
-                    var product = _context.Products.FirstOrDefault(x => x.Id.Equals(productVm.Id));
-                    if (product == null)
-                        throw new InvalidOperationException("Продукт не найден в базе");
+                    var product = _db.Products.FirstOrDefault(p => p.Id == item.Id);
+                    if (product is null)
+                        throw new InvalidOperationException($"Товар с идентификатором id:{item.Id} отсутствует в БД");
 
-                    var orderItem = new OrderItem()
+                    var order_item = new OrderItem
                     {
-                        Price = product.Price,
-                        Quantity = item.Value,
-
                         Order = order,
+                        Price = product.Price,
+                        Quantity = item.Quantity,
                         Product = product
                     };
 
-                    _context.OrderItems.Add(orderItem);
+                    _db.OrderItems.Add(order_item);
                 }
 
-                _context.SaveChanges();
+                _db.SaveChanges();
                 transaction.Commit();
-                
-                return order;
+
+                return order.ToDTO();
             }
         }
     }

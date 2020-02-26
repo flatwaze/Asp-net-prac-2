@@ -40,7 +40,7 @@ namespace WebStore
                 .UseSqlServer(_configuration.GetConnectionString("DefaultConnection")));
 
             services.AddSingleton<IEmployeesService, EmployeesClient>();
-            services.AddScoped<IProductService, SqlProductService>();
+            services.AddScoped<IProductService, ProductsClient>();
             services.AddScoped<IOrdersService, SqlOrdersService>();
             services.AddSingleton<IValuesService, ValuesClient>();
 

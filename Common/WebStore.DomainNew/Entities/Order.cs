@@ -14,7 +14,7 @@ namespace WebStore.DomainNew.Entities
         public DateTime Date { get; set; }
 
         public virtual User User { get; set; }
-        public virtual Collection<OrderItem> OrderItems { get; set; }
+        public virtual ICollection<OrderItem> OrderItems { get; set; }
     }
 }
 
