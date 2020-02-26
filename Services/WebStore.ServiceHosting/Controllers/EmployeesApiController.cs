@@ -16,14 +16,21 @@ namespace WebStore.ServiceHosting.Controllers
         private readonly IEmployeesService _EmployeesService;
         public EmployeesApiController(IEmployeesService EmployeesService) => _EmployeesService = EmployeesService;
 
-        public void AddNew(EmployeeViewModel model) => _EmployeesService.AddNew(model);
+        [HttpPost, ActionName("Post")]
+        public void AddNew([FromBody] EmployeeViewModel model) => _EmployeesService.AddNew(model);
 
-        public void Commit() => _EmployeesService.Commit();
-
-        public void Delete(int id) => _EmployeesService.Delete(id);
-
+        [HttpGet, ActionName("Get")]
         public IEnumerable<EmployeeViewModel> GetAll() => _EmployeesService.GetAll();
 
+        [HttpGet("{id}"), ActionName("Get")]
         public EmployeeViewModel GetById(int id) => _EmployeesService.GetById(id);
+
+        [NonAction]
+        public void Commit() => _EmployeesService.Commit();
+
+        [HttpDelete("{id}")]
+        public void Delete(int id) => _EmployeesService.Delete(id);
+
+
     }
 }
