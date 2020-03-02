@@ -10,6 +10,7 @@ using WebStore.Interfaces.Services;
 using WebStore.Services.Implementations;
 using Microsoft.EntityFrameworkCore;
 using WebStore.DAL;
+using WebStore.DomainNew.Entities;
 
 namespace WebStore.ServiceHosting
 {
@@ -25,8 +26,9 @@ namespace WebStore.ServiceHosting
         {
             services.AddDbContext<WebStoreContext>(x => x
               .UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-
+            services.AddTransient<DbInitializer>();
             services.AddControllers();
+            services.AddIdentity<User, Role>().AddEntityFrameworkStores<WebStoreContext>();
             services.AddScoped<IValuesService, ValuesClient>();
             services.AddScoped<IProductService, SqlProductService>();
             /*services.AddScoped<IOrdersService, SqlOrdersService>();
@@ -35,8 +37,10 @@ namespace WebStore.ServiceHosting
             services.AddMvc();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DbInitializer db)
         {
+            db.InitializeAsync().Wait();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

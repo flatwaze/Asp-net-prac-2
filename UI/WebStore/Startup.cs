@@ -36,8 +36,8 @@ namespace WebStore
                 options.Filters.Add(typeof(SimpleActionFilter));
             });
 
-            services.AddDbContext<WebStoreContext>(x => x
-                .UseSqlServer(_configuration.GetConnectionString("DefaultConnection")));
+            /*services.AddDbContext<WebStoreContext>(x => x
+                .UseSqlServer(_configuration.GetConnectionString("DefaultConnection")));*/
 
             services.AddSingleton<IEmployeesService, EmployeesClient>();
             services.AddScoped<IProductService, ProductsClient>();
@@ -45,7 +45,7 @@ namespace WebStore
             services.AddSingleton<IValuesService, ValuesClient>();
 
             services.AddIdentity<User, IdentityRole>()
-                .AddEntityFrameworkStores<WebStoreContext>()
+                //.AddEntityFrameworkStores<WebStoreContext>()
                 .AddDefaultTokenProviders();
 
             services.Configure<IdentityOptions>(options =>
