@@ -54,13 +54,15 @@ namespace WebStore.Services.Implementations
             _employees.Add(model);
         }
 
-        public void Delete(int id)
+        public bool Delete(int id)
         {
             var employee = GetById(id);
             if (employee != null)
             {
                 _employees.Remove(employee);
+                return true;
             }
+            return false;
         }
     }
 }

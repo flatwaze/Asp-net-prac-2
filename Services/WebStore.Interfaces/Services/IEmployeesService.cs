@@ -17,9 +17,8 @@ namespace WebStore.Interfaces.Services
 
         void Commit();
 
-
         void AddNew(EmployeeViewModel model);
 
-        void Delete(int id);
+        bool Delete(int id);
     }
 }

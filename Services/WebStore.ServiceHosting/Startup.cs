@@ -23,6 +23,9 @@ namespace WebStore.ServiceHosting
         {
             services.AddControllers();
             services.AddScoped<IValuesService, ValuesClient>();
+            services.AddScoped<IProductService, SqlProductService>();
+            /*services.AddScoped<IOrdersService, SqlOrdersService>();
+            services.AddScoped<ICartService, CookieCartService>();*/
             services.AddSingleton<IEmployeesService, InMemoryEmployeesService>();
             services.AddMvc();
         }
