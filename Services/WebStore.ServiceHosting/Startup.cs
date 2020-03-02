@@ -8,6 +8,8 @@ using WebStore.Clients.Values;
 using Microsoft.Extensions.Hosting;
 using WebStore.Interfaces.Services;
 using WebStore.Services.Implementations;
+using Microsoft.EntityFrameworkCore;
+using WebStore.DAL;
 
 namespace WebStore.ServiceHosting
 {
@@ -21,6 +23,9 @@ namespace WebStore.ServiceHosting
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<WebStoreContext>(x => x
+              .UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
             services.AddControllers();
             services.AddScoped<IValuesService, ValuesClient>();
             services.AddScoped<IProductService, SqlProductService>();

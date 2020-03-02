@@ -29,4 +29,4 @@ namespace WebStore.Clients.Values
                .Result;
     }
 }
-}
+

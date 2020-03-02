@@ -7,7 +7,7 @@ namespace WebStore.DomainNew.DTO.Orders
     public class CreateOrderModel
     {
         public OrderViewModel OrderViewModel { get; set; }
-        public List<OrderItemsDTO> OrderItems { get; set; }
+        public List<OrderItemDTO> OrderItems { get; set; }
 
     }
 
