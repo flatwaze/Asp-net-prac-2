@@ -22,6 +22,8 @@ namespace WebStore.Controllers
             return View();
         }
 
+        public IActionResult ThrowError(string id) => throw new ApplicationException(id);
+
         public IActionResult ContactUs()
         {
             return View();
