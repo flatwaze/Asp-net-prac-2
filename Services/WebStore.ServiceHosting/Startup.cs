@@ -11,6 +11,8 @@ using WebStore.Services.Implementations;
 using Microsoft.EntityFrameworkCore;
 using WebStore.DAL;
 using WebStore.DomainNew.Entities;
+using Microsoft.AspNetCore.Identity;
+using System;
 
 namespace WebStore.ServiceHosting
 {
@@ -29,6 +31,20 @@ namespace WebStore.ServiceHosting
             services.AddTransient<DbInitializer>();
             services.AddControllers();
             services.AddIdentity<User, Role>().AddEntityFrameworkStores<WebStoreContext>();
+            services.Configure<IdentityOptions>(
+                opt =>
+                {
+                    opt.Password.RequiredLength = 3;
+                    opt.Password.RequireDigit = false;
+                    opt.Password.RequireUppercase = false;
+                    opt.Password.RequireLowercase = false;
+                    opt.Password.RequireNonAlphanumeric = false;
+                    opt.Password.RequiredUniqueChars = 3;
+                    opt.Lockout.AllowedForNewUsers = true;
+                    opt.Lockout.MaxFailedAccessAttempts = 10;
+                    opt.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
+                    opt.User.RequireUniqueEmail = false;
+                });
             services.AddScoped<IValuesService, ValuesClient>();
             services.AddScoped<IProductService, SqlProductService>();
             /*services.AddScoped<IOrdersService, SqlOrdersService>();
