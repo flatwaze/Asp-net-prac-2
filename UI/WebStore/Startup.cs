@@ -15,6 +15,8 @@ using WebStore.Services.Implementations;
 using WebStore.Interfaces.API;
 using WebStore.Clients.Values;
 using WebStore.Clients.Employees;
+using Microsoft.Extensions.Logging;
+using WebStore.Logger;
 
 namespace WebStore
 {
@@ -69,8 +71,10 @@ namespace WebStore
         }
 
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory log)
+            
         {
+            log.AddLog4Net();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

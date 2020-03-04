@@ -13,6 +13,8 @@ using WebStore.DAL;
 using WebStore.DomainNew.Entities;
 using Microsoft.AspNetCore.Identity;
 using System;
+using Microsoft.Extensions.Logging;
+using WebStore.Logger;
 
 namespace WebStore.ServiceHosting
 {
@@ -53,8 +55,10 @@ namespace WebStore.ServiceHosting
             services.AddMvc();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DbInitializer db)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DbInitializer db, ILoggerFactory log)
         {
+            log.AddLog4Net();
+
             db.InitializeAsync().Wait();
 
             if (env.IsDevelopment())
