@@ -19,6 +19,12 @@ namespace WebStore
 
         private static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                /*.ConfigureLogging((hots, log)=> {
+                    log.AddFilter("Microsoft", level => level > LogLevel.Information);
+                    log.ClearProviders();
+                    log.AddConsole(opt => opt.IncludeScopes = true);
+                    log.AddDebug();
+                })*/
                 .UseStartup<Startup>()
                 .Build();
 
