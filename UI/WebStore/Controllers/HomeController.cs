@@ -4,17 +4,25 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using WebStore.Infrastructure;
 
 namespace WebStore.Controllers
 {
     public class HomeController : Controller
     {
+
+        private readonly ILogger<HomeController> _Logger;
+        public HomeController(ILogger<HomeController> Logger) => _Logger = Logger;
+
         [SimpleActionFilter]
         public IActionResult Index()
         {
+            _Logger.LogInformation("Main Page.");
             return View();
         }
+
+        public IActionResult ThrowError(string id) => throw new ApplicationException(id);
 
         public IActionResult ContactUs()
         {

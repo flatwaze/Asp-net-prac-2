@@ -15,6 +15,8 @@ using WebStore.Services.Implementations;
 using WebStore.Interfaces.API;
 using WebStore.Clients.Values;
 using WebStore.Clients.Employees;
+using Microsoft.Extensions.Logging;
+using WebStore.Logger;
 
 namespace WebStore
 {
@@ -36,8 +38,8 @@ namespace WebStore
                 options.Filters.Add(typeof(SimpleActionFilter));
             });
 
-            services.AddDbContext<WebStoreContext>(x => x
-                .UseSqlServer(_configuration.GetConnectionString("DefaultConnection")));
+            /*services.AddDbContext<WebStoreContext>(x => x
+                .UseSqlServer(_configuration.GetConnectionString("DefaultConnection")));*/
 
             services.AddSingleton<IEmployeesService, EmployeesClient>();
             services.AddScoped<IProductService, ProductsClient>();
@@ -45,7 +47,7 @@ namespace WebStore
             services.AddSingleton<IValuesService, ValuesClient>();
 
             services.AddIdentity<User, IdentityRole>()
-                .AddEntityFrameworkStores<WebStoreContext>()
+                //.AddEntityFrameworkStores<WebStoreContext>()
                 .AddDefaultTokenProviders();
 
             services.Configure<IdentityOptions>(options =>
@@ -69,8 +71,10 @@ namespace WebStore
         }
 
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory log)
+            
         {
+            log.AddLog4Net();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -89,6 +93,7 @@ namespace WebStore
 
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseMiddleware<ErrorHandlerMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {

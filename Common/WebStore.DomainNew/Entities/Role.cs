@@ -2,10 +2,10 @@
 
 namespace WebStore.DomainNew.Entities
 {
-    public class User : IdentityUser
+    public class Role : IdentityRole
     {
         public const string Administrator = "Administrator";
-        public const string AdminPasswordDefault = "AdminPassword";
+        public const string User = "User";
 
         public string Description { get; set; }
     }

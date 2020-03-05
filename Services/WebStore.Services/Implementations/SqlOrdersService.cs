@@ -8,6 +8,7 @@ using WebStore.DomainNew.Entities;
 using WebStore.Models;
 using WebStore.Interfaces.Services;
 using WebStore.DAL;
+using WebStore.Services.Mapping;
 
 namespace WebStore.Services.Product
 {

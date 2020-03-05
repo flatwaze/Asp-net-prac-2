@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using WebStore.DomainNew.Entities;
 using WebStore.Models;
 
@@ -15,11 +16,14 @@ namespace WebStore.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly ILogger<AccountController> _logger;
 
-        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager)
+        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, ILogger<AccountController> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _logger = logger;
+
         }
 
         [HttpGet]
@@ -73,22 +77,30 @@ namespace WebStore.Controllers
         {
             if (!ModelState.IsValid)
                 return View(model);
-
-            var user = new User { UserName = model.UserName, Email = model.Email };
-            var createResult = await _userManager.CreateAsync(user, model.Password);
-
-            if (!createResult.Succeeded)
+            using (_logger.BeginScope("Регистрация новго  пользователя {0} началась.", model.UserName))
             {
-                foreach (var identityError in createResult.Errors)
-                {
-                    ModelState.AddModelError("", identityError.Description);
-                    return View(model);
-                }
-            }
 
-            await _signInManager.SignInAsync(user, false);
-            await _userManager.AddToRoleAsync(user, "User");
+                var user = new User { UserName = model.UserName, Email = model.Email };
+                var createResult = await _userManager.CreateAsync(user, model.Password);
+
+                if (!createResult.Succeeded)
+                {
+                    foreach (var identityError in createResult.Errors)
+                    {
+                        ModelState.AddModelError("", identityError.Description);
+                        return View(model);
+                    }
+                }
+
+                _logger.LogInformation("Пользователь {0} зарегестриован", model.UserName);
+
+                await _signInManager.SignInAsync(user, false);
+                await _userManager.AddToRoleAsync(user, "User");
+
+                _logger.LogInformation("Роль выдана пользователю {0}", model.UserName);
+            }
             return RedirectToAction("Index", "Home");
+           
         }
     }
 }
