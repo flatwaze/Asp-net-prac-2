@@ -17,6 +17,7 @@ using WebStore.Clients.Values;
 using WebStore.Clients.Employees;
 using Microsoft.Extensions.Logging;
 using WebStore.Logger;
+using WebStore.Services.Product;
 
 namespace WebStore
 {
@@ -67,7 +68,7 @@ namespace WebStore
 
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddScoped<ICartService, CookieCartService>();
+            services.AddScoped<ICartService, CartService>();
         }
 
 
