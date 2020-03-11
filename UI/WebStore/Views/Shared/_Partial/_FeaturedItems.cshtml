@@ -22,8 +22,8 @@
             </div>
             <div class="choose">
                 <ul class="nav nav-pills nav-justified">
-                    <li><a href="#"><i class="fa fa-plus-square"></i>Add to wishlist</a></li>
-                    <li><a href="#"><i class="fa fa-plus-square"></i>Add to compare</a></li>
+                    <a asp-controller="Catalog" asp-action="Details" asp-route-id="@Model.Id" asp-route-FromBrand="true">@Model.Name</a>
+                    <a asp-controller="Cart" asp-action="AddToCart"><i class="fa fa-shopping-cart"></i>Add to cart</a>
                 </ul>
             </div>
         </div>
@@ -137,13 +137,13 @@
                     <img src="~/images/home/product6.jpg" alt="" />
                     <h2>$56</h2>
                     <p>Easy Polo Black Edition</p>
-                    <a href="#" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</a>
+                    <a asp-controller="Cart" asp-action="AddToCart"><i class="fa fa-shopping-cart"></i>Add to cart</a>
                 </div>
                 <div class="product-overlay">
                     <div class="overlay-content">
                         <h2>$56</h2>
                         <p>Easy Polo Black Edition</p>
-                        <a href="#" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</a>
+                        <a asp-controller="Cart" asp-action="AddToCart"><i class="fa fa-shopping-cart"></i>Add to cart</a>
                     </div>
                 </div>
             </div>

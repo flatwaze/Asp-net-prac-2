@@ -8,6 +8,7 @@ using WebStore.DomainNew.DTO.Products;
 using WebStore.DomainNew.Entities;
 using WebStore.DomainNew.Filters;
 using WebStore.Interfaces.Services;
+using WebStore.Services.Mapping;
 
 namespace WebStore.Services.Implementations
 {
@@ -88,6 +89,9 @@ namespace WebStore.Services.Implementations
                 }
             };
         }
+
+        public CategoryDTO GetCategoryById(int id) => _context.Categories.Find(id).ToDTO();
+        public BrandDTO GetBrandById(int id) => _context.Brands.Find(id).ToDTO();
 
     }
 }
