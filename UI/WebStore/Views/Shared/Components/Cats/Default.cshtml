@@ -1,12 +1,11 @@
-﻿@model IEnumerable<WebStore.Models.CategoryViewModel>
+﻿@model WebStore.DomainNew.Models.CategoryCompleteViewModel
 
 <h2>Категории</h2>
 <div class="panel-group category-products" id="accordian">
     <!--category-products-->
-    @foreach (var parentCategory in Model)
+    @foreach (var parentCategory in Model.Categories)
     {
-        if (parentCategory.ChildCategories.Count > 0) // если есть дочерние категории
-        {
+        if (parentCategory.ChildCategories.Count > 0) { 
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h4 class="panel-title">
@@ -16,15 +15,18 @@
                         </a>
                     </h4>
                 </div>
-                <div id="@parentCategory.Name.ToLower()" class="panel-collapse collapse">
+                <div id="@parentCategory.Name.ToLower()" class="panel-collapse collapse @(parentCategory.Id == Model.CurrentParentCategoryId ? "in" : null)">
                     <div class="panel-body">
                         <ul>
                             @foreach (var childCategory in parentCategory.ChildCategories)
                             {
-                                <li><a asp-controller="Catalog" 
+                                //не распознаёт как TagHelper
+                                <li @(childCategory.Id == Model.CurrentCategoryId ? "class = active" :  null)> 
+                                        <a asp-controller="Catalog" 
                                         asp-action="Shop" 
                                         asp-route-categoryId="@childCategory.Id"
-                                        >@childCategory.Name</a></li>
+                                        >@childCategory.Name</a>
+                                </li>
                             }
                         </ul>
                     </div>
