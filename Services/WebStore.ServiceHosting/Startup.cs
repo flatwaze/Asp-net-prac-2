@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Identity;
 using System;
 using Microsoft.Extensions.Logging;
 using WebStore.Logger;
+using WebStore.Services.Product;
 
 namespace WebStore.ServiceHosting
 {
@@ -51,6 +52,7 @@ namespace WebStore.ServiceHosting
             services.AddScoped<IProductService, SqlProductService>();
             /*services.AddScoped<IOrdersService, SqlOrdersService>();
             services.AddScoped<ICartService, CookieCartService>();*/
+            services.AddScoped<ICartService, CartService>();
             services.AddSingleton<IEmployeesService, InMemoryEmployeesService>();
             services.AddMvc();
         }

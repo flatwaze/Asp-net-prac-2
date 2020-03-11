@@ -5,7 +5,7 @@ using WebStore.Models;
 
 namespace WebStore.DomainNew.Models
 {
-    class DetailsViewModel
+    public class DetailsViewModel
     {
         public CartViewModel CartViewModel { get; set; }
         public OrderViewModel OrderViewModel { get; set; }
