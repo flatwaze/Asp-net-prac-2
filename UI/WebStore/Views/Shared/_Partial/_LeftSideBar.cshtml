@@ -1,7 +1,7 @@
 ﻿<div class="left-sidebar">
 
-    <vc:cats caegory-id="@Context.Request.Query["CategoryId"]"/>
-    @await Component.InvokeAsync("Brands")
+    <vc:cats caegory-id="@Context.Request.Query["CategoryId"]" />
+    <vc:brands brand-id="@Context.Request.Query["BrandId"]" />
 
     <div class="price-range">
         <!--price-range-->
