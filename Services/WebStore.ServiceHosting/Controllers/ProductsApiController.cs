@@ -29,5 +29,11 @@ namespace WebStore.ServiceHosting.Controllers
 
         [HttpPost, ActionName("Post")]
         public IEnumerable<ProductDTO> GetProducts([FromBody]ProductFilter filter) => _ProductService.GetProducts(filter);
+
+        [HttpGet("categories/{id}")]
+        public CategoryDTO GetCategoryById(int id) => _ProductService.GetCategoryById(id);
+
+        [HttpGet("brands/{id}")]
+        public BrandDTO GetBrandById(int id) => _ProductService .GetBrandById(id);
     }
 }

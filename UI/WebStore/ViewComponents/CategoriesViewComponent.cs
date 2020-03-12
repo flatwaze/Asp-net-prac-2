@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using WebStore.DomainNew.Models;
 using WebStore.Interfaces.Services;
 using WebStore.Models;
 
@@ -18,20 +19,25 @@ namespace WebStore.ViewComponents
             _productService = productService;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync()
+        public async Task<IViewComponentResult> InvokeAsync(string CategoryId)
         {
-            var categories = GetCategories();
+            var category_id = int.TryParse(CategoryId, out var id) ? id : (int?)null;
 
-            return View(categories);
+            var categories = GetCategories(category_id, out var parent_category_id);
+
+            return View(new CategoryCompleteViewModel { Categories = categories, 
+                CurrentParentCategoryId = parent_category_id, 
+                CurrentCategoryId = category_id});
         }
 
-        private List<CategoryViewModel> GetCategories()
+        private IEnumerable<CategoryViewModel> GetCategories(int? CategoryId, out int? ParentCategoryId)
         {
+            ParentCategoryId = null;
             var categories = _productService.GetCategories();
 
             var parentSections = categories.Where(x => !x.ParentId.HasValue).ToArray();
             var parentCategories = new List<CategoryViewModel>();
-            // получим и заполним родительские категории
+            
             foreach (var parentCategory in parentSections)
             {
                 parentCategories.Add(new CategoryViewModel()
@@ -43,12 +49,15 @@ namespace WebStore.ViewComponents
                 });
             }
 
-            // получим и заполним дочерние категории
+            
             foreach (var CategoryViewModel in parentCategories)
             {
                 var childCategories = categories.Where(x => x.ParentId == CategoryViewModel.Id);
                 foreach (var childCategory in childCategories)
                 {
+                    if (childCategory.Id == CategoryId)
+                        ParentCategoryId = CategoryViewModel.Id;
+
                     CategoryViewModel.ChildCategories.Add(new CategoryViewModel()
                     {
                         Id = childCategory.Id,

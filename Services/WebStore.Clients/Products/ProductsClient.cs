@@ -20,6 +20,10 @@ namespace WebStore.Clients.Values
 
         public IEnumerable<Brand> GetBrands() => Get<List<Brand>>($"{_ServiceAddress}/brands");
 
+        public CategoryDTO GetCategoryById(int id) => Get<CategoryDTO>($"{_ServiceAddress}/sections/{id}");
+
+        public BrandDTO GetBrandById(int id) => Get<BrandDTO>($"{_ServiceAddress}/brands/{id}");
+
         public IEnumerable<Category> GetCategories() => Get<List<Category>>($"{_ServiceAddress}/categories");
 
         public ProductDTO GetProductById(int id) => Get<ProductDTO>($"{_ServiceAddress}/{id}");
