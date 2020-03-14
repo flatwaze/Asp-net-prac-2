@@ -1,11 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using WebStore.DomainNew.DTO.Products;
+using WebStore.DomainNew.Entities;
 using WebStore.DomainNew.Filters;
-using WebStore.Infrastructure;
+using WebStore.DomainNew.Models;
 using WebStore.Interfaces.Services;
 using WebStore.Models;
 
@@ -13,53 +15,78 @@ namespace WebStore.Controllers
 {
     public class CatalogController : Controller
     {
-        private readonly IProductService _productService;
+        private const string __PageSize = "PageSize";
 
-        public CatalogController(IProductService productService)
+        private readonly IProductService _ProductData;
+        private readonly IConfiguration _Configuration;
+
+        public CatalogController(IProductService ProductData, IConfiguration Configuration)
         {
-            _productService = productService;
+            _ProductData = ProductData;
+            _Configuration = Configuration;
         }
 
-        [SimpleActionFilter]
-        public IActionResult Shop(int? categoryId, int? brandId)
+        public IActionResult Shop(int? CategoryId, int? BrandId, [FromServices] IMapper Mapper, int Page = 1)
         {
-            var products = _productService.GetProducts(
-                new ProductFilter { BrandId = brandId, CategoryId = categoryId });
+            var page_size = int.TryParse(_Configuration[__PageSize], out var size) ? size : (int?)null;
 
-            var model = new CatalogViewModel()
+            var products = _ProductData.GetProducts(new ProductFilter
             {
-                BrandId = brandId,
-                CategoryId = categoryId,
-                Products = products.Select(p => new ProductViewModel()
-                {
-                    Id = p.Id,
-                    ImageUrl = p.ImageUrl,
-                    Name = p.Name,
-                    Order = p.Order,
-                    Price = p.Price,
-                    BrandName = p.Brand?.Name ?? string.Empty
-                }).OrderBy(p => p.Order).ToList()
-            };
+                CategoryId = CategoryId,
+                BrandId = BrandId,
+                Page = Page,
+                PageSize = page_size
+            });
 
-            return View(model);
+            return View(new CatalogViewModel
+            {
+                CategoryId = CategoryId,
+                BrandId = BrandId,
+                Products = products.Products.Select(Mapper.Map<ProductViewModel>).OrderBy(p => p.Order),
+                PageViewModel = new PageViewModel
+                {
+                    PageSize = page_size ?? 0,
+                    PageNumber = Page,
+                    TotalItems = products.TotalCount
+                }
+            });
         }
 
-        public IActionResult ProductDetails(int id)
+        public IActionResult Details(int id)
         {
-            var product = _productService.GetProductById(id);
-            if (product == null)
+            var product = _ProductData.GetProductById(id);
+
+            if (product is null)
                 return NotFound();
 
             return View(new ProductViewModel
             {
                 Id = product.Id,
-                ImageUrl = product.ImageUrl,
                 Name = product.Name,
-                Order = product.Order,
                 Price = product.Price,
-                BrandName = product.Brand?.Name ?? string.Empty
+                ImageUrl = product.ImageUrl,
+                Order = product.Order,
+                Brand = product.Brand?.Name
             });
-
         }
+
+        #region API
+
+        public IActionResult GetFiltratedItems(int? CategoryId, int? BrandId, [FromServices] IMapper Mapper, int Page)
+        {
+            var products = GetProducts(CategoryId, BrandId, Page);
+            return PartialView("Partial/_FeaturesItem", products.Select(Mapper.Map<ProductViewModel>));
+        }
+
+        private IEnumerable<ProductDTO> GetProducts(int? CategoryId, int? BrandId, int Page) =>
+            _ProductData.GetProducts(new ProductFilter
+            {
+                CategoryId = CategoryId,
+                BrandId = BrandId,
+                Page = Page,
+                PageSize = int.Parse(_Configuration[__PageSize])
+            }).Products;
+
+        #endregion
     }
 }

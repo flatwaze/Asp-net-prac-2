@@ -29,7 +29,7 @@ namespace WebStore.Areas.Admin.Controllers
 
         public IActionResult ProductList()
         {
-            return View(_productData.GetProducts(new ProductFilter()));
+            return View(_productData.GetProducts(new ProductFilter()).Products);
         }
     }
 }

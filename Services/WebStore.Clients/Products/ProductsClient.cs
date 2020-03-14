@@ -28,6 +28,6 @@ namespace WebStore.Clients.Values
 
         public ProductDTO GetProductById(int id) => Get<ProductDTO>($"{_ServiceAddress}/{id}");
 
-        public IEnumerable<ProductDTO> GetProducts(ProductFilter filter = null) => Post(_ServiceAddress, filter).Content.ReadAsAsync<List<ProductDTO>>().Result;
+        public PagedProductsDTO GetProducts(ProductFilter filter = null) => Post(_ServiceAddress, filter).Content.ReadAsAsync<PagedProductsDTO>().Result;
     }
 }

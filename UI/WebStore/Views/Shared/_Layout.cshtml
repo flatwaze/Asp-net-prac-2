@@ -37,7 +37,10 @@
         $(function () {
             Cart.init({
                 addToCartLink: '@Url.Action("AddToCart","Cart")',
-                getCartViewLink: '@Url.Action("GetCartView", "Cart")'
+                getCartViewLink: '@Url.Action("GetCartView", "Cart")',
+                decrementLink: "@Url.Action("DecrementFromCartAPI", "Cart")",
+                removeFromCartLink: "@Url.Action("RemoveFromCartAPI", "Cart")",
+                removeAllLink: "@Url.Action("RemoveAllAPI", "Cart")"
             });
         });
     </script>
