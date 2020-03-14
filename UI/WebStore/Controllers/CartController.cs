@@ -91,5 +91,7 @@ namespace WebStore.Controllers
             ViewBag.OrderId = id;
             return View();
         }
+
+        public IActionResult GetCartView() => ViewComponent("Cart");
     }
 }
