@@ -21,17 +21,17 @@ namespace WebStore.Services.Implementations
             _context = context;
         }
 
-        public IEnumerable<Category> GetCategories()
+        public IEnumerable<CategoryDTO> GetCategories()
         {
-            return _context.Categories.ToList();
+            return _context.Categories.ToDTO().ToList();
         }
 
-        public IEnumerable<Brand> GetBrands()
+        public IEnumerable<BrandDTO> GetBrands()
         {
-           return _context.Brands.ToList();
+           return _context.Brands.ToDTO().ToList();
         }
 
-        public IEnumerable<ProductDTO> GetProducts(ProductFilter filter)
+        public PagedProductsDTO GetProducts(ProductFilter filter)
         {
             var query = _context.Products
                 .Include(x => x.Category)
@@ -42,7 +42,7 @@ namespace WebStore.Services.Implementations
             if (filter.CategoryId.HasValue)
                 query = query.Where(x => x.CategoryId.Equals(filter.CategoryId.Value));
 
-            return query
+            /*return query
                 .AsEnumerable()
                 .Select(p => new ProductDTO
                 {
@@ -61,33 +61,31 @@ namespace WebStore.Services.Implementations
                         Id = p.Category.Id,
                         Name = p.Category.Name
                     }
-                });
+                });*/
+            if (filter?.Ids?.Count > 0)
+            {
+                query = query.Where(x => filter.Ids.Contains(x.Id));
+            }
+            var total_count = query.Count();
+
+            if (filter?.PageSize != null)
+                query = query
+                   .Skip((filter.Page - 1) * (int)filter.PageSize)
+                   .Take((int)filter.PageSize);
+
+            return new PagedProductsDTO
+            {
+                Products = query.AsEnumerable().ToDTO(),
+                TotalCount = total_count
+            };
         }
 
         public ProductDTO GetProductById(int id)
         {
-            var product = _context.Products
+            return _context.Products
                .Include(p => p.Brand)
                .Include(p => p.Category)
-               .FirstOrDefault(p => p.Id == id);
-            return product is null ? null : new ProductDTO
-            {
-                Id = product.Id,
-                Name = product.Name,
-                Order = product.Order,
-                Price = product.Price,
-                ImageUrl = product.ImageUrl,
-                Brand = product.Brand is null ? null : new BrandDTO
-                {
-                    Id = product.Brand.Id,
-                    Name = product.Brand.Name
-                },
-                Category = product.Category is null ? null : new CategoryDTO
-                {
-                    Id = product.Category.Id,
-                    Name = product.Category.Name
-                }
-            };
+               .FirstOrDefault(p => p.Id == id).ToDTO();
         }
 
         public CategoryDTO GetCategoryById(int id) => _context.Categories.Find(id).ToDTO();

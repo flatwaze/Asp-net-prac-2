@@ -1,15 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+﻿using System.Linq;
+using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WebStore.Controllers;
 using WebStore.DomainNew.DTO.Products;
+using WebStore.DomainNew.Entities;
 using WebStore.DomainNew.Filters;
+using WebStore.DomainNew.Models;
 using WebStore.Interfaces.Services;
 using WebStore.Models;
 using Assert = Xunit.Assert;
@@ -50,7 +49,9 @@ namespace WebStore.Tests.Controllers
                    }
                });
 
-            var controller = new CatalogController(product_data_mock.Object);
+            var config_mock = new Mock<IConfiguration>();
+
+            var controller = new CatalogController(product_data_mock.Object, config_mock.Object);
 
             var result = controller.ProductDetails(expected_product_id);
 
@@ -74,7 +75,9 @@ namespace WebStore.Tests.Controllers
                .Setup(p => p.GetProductById(It.IsAny<int>()))
                .Returns(default(ProductDTO));
 
-            var controller = new CatalogController(product_data_mock.Object);
+            var config_mock = new Mock<IConfiguration>();
+
+            var controller = new CatalogController(product_data_mock.Object, config_mock.Object);
 
             var result = controller.ProductDetails(expected_product_id);
 
@@ -84,48 +87,54 @@ namespace WebStore.Tests.Controllers
         [TestMethod]
         public void Shop_Returns_Correct_View()
         {
+            var products = new[]
+            {
+                new ProductDTO
+                {
+                    Id = 1,
+                    Name = "Product 1",
+                    Order = 0,
+                    Price = 10m,
+                    ImageUrl = "Product1.png",
+                    Brand = new BrandDTO
+                    {
+                        Id = 1,
+                        Name = "Brand of product 1"
+                    },
+                    Category = new CategoryDTO
+                    {
+                        Id = 1,
+                        Name = "Category of product 1"
+                    }
+                },
+                new ProductDTO
+                {
+                    Id = 2,
+                    Name = "Product 2",
+                    Order = 0,
+                    Price = 20m,
+                    ImageUrl = "Product2.png",
+                    Brand = new BrandDTO
+                    {
+                        Id = 2,
+                        Name = "Brand of product 2"
+                    },
+                    Category = new CategoryDTO
+                    {
+                        Id = 2,
+                        Name = "Category of product 2"
+                    }
+                },
+            };
+
             var product_data_mock = new Mock<IProductService>();
             product_data_mock
                .Setup(p => p.GetProducts(It.IsAny<ProductFilter>()))
-               .Returns<ProductFilter>(filter => new[]
-                {
-                    new ProductDTO
-                    {
-                        Id = 1,
-                        Name = "Product 1",
-                        Order = 0,
-                        Price = 10m,
-                        ImageUrl = "Product1.png",
-                        Brand = new BrandDTO
-                        {
-                            Id = 1,
-                            Name = "Brand of product 1"
-                        } ,
-                        Category = new CategoryDTO
-                        {
-                            Id = 1,
-                            Name = "Category of product 1"
-                        }
-                    },
-                    new ProductDTO
-                    {
-                        Id = 2,
-                        Name = "Product 2",
-                        Order = 0,
-                        Price = 20m,
-                        ImageUrl = "Product2.png",
-                        Brand = new BrandDTO
-                        {
-                            Id = 2,
-                            Name = "Brand of product 2"
-                        } ,
-                        Category = new CategoryDTO
-                        {
-                            Id = 2,
-                            Name = "Category of product 2"
-                        }
-                    },
-                });
+               .Returns<ProductFilter>(filter => new PagedProductsDTO
+               {
+                   Products = products,
+                   TotalCount = products.Length
+               });
 
             var mapper_mock = new Mock<IMapper>();
             mapper_mock
@@ -140,12 +149,14 @@ namespace WebStore.Tests.Controllers
                    Order = p.Order
                });
 
-            var controller = new CatalogController(product_data_mock.Object);
+            var config_mock = new Mock<IConfiguration>();
+
+            var controller = new CatalogController(product_data_mock.Object, config_mock.Object);
 
             const int expected_Category_id = 1;
             const int expected_brand_id = 5;
 
-            var result = controller.Shop(expected_Category_id, expected_brand_id);
+            var result = controller.Shop(expected_Category_id, expected_brand_id, mapper_mock.Object);
 
             var view_result = Assert.IsType<ViewResult>(result);
 
@@ -155,7 +166,7 @@ namespace WebStore.Tests.Controllers
             Assert.Equal(expected_Category_id, model.CategoryId);
             Assert.Equal(expected_brand_id, model.BrandId);
 
-            //Assert.Equal("Brand of product 1", model.Products.Count().Brand);
+            Assert.Equal("Brand of product 1", model.Products.First().Brand);
         }
     }
 }

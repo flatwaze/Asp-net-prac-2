@@ -32,6 +32,18 @@
     <script src="~/js/bootstrap.min.js"></script>
     <script src="~/js/jquery.scrollUp.min.js"></script>
     <script src="~/js/jquery.prettyPhoto.js"></script>
+    <script src="~/js/Cart/CartLogic.js"></script>
+    <script>
+        $(function () {
+            Cart.init({
+                addToCartLink: '@Url.Action("AddToCart","Cart")',
+                getCartViewLink: '@Url.Action("GetCartView", "Cart")',
+                decrementLink: "@Url.Action("DecrementFromCartAPI", "Cart")",
+                removeFromCartLink: "@Url.Action("RemoveFromCartAPI", "Cart")",
+                removeAllLink: "@Url.Action("RemoveAllAPI", "Cart")"
+            });
+        });
+    </script>
 
 </body>
 </html>
