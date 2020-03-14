@@ -53,8 +53,14 @@
         $.get(Cart._properties.removeFromCartLink + "/" + id)
             .done(function () {
                 const count = parseInt($(".cart_quantity_input", container).val());
-                $(".cart_quantity_input", container).val(count - 1);
-                Cart.refreshPrice(container);
+                if (count > 1) {
+                    $(".cart_quantity_input", container).val(count - 1);
+                    Cart.refreshPrice(container);
+                }
+                else {
+                    container.remove();
+                    Cart.refreshTotalPrice();
+                }
                 Cart.refreshCartView();
             })
             .fail(function () { consoe.log("decrement fail"); });
@@ -66,7 +72,8 @@
         var button = $(this);
         const id = button.data("id");
         $.get(Cart._properties.removeFromCartLink + '/' + id).done(function () {
-            Cart.showToolTip(button);
+            button.closest("tr").remove();
+            Cart.refreshTotalPrice();
             Cart.refreshCartView();
         }).fail(function () { console.log("error"); });
     },
