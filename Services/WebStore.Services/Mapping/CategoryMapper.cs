@@ -1,0 +1,38 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using WebStore.DomainNew.DTO.Products;
+using WebStore.DomainNew.Entities;
+
+namespace WebStore.Services.Mapping
+{
+    public static class CategoryMapper
+    {
+        public static CategoryDTO ToDTO(this Category Category) => Category is null ? null : new CategoryDTO
+        {
+            Id = Category.Id,
+            Name = Category.Name,
+            Order = Category.Order,
+            ParentId = Category.ParentId
+        };
+
+        public static Category FromDTO(this CategoryDTO Category) => Category is null ? null : new Category
+        {
+            Id = Category.Id,
+            Name = Category.Name,
+            Order = Category.Order,
+            ParentId = Category.ParentId
+        };
+
+        public static IEnumerable<CategoryDTO> ToDTO(this IEnumerable<Category> Categorys) => Categorys?.Select(ToDTO);
+
+        public static IQueryable<CategoryDTO> ToDTO(this IQueryable<Category> Categorys) => Categorys?.Select(Category => new CategoryDTO
+        {
+            Id = Category.Id,
+            Name = Category.Name,
+            Order = Category.Order,
+            ParentId = Category.ParentId,
+        });
+    }
+}

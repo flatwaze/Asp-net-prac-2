@@ -7,10 +7,10 @@ namespace WebStore.Interfaces.Services
 {
     public interface IProductService
     {
-        IEnumerable<Category> GetCategories();
+        IEnumerable<CategoryDTO> GetCategories();
 
         CategoryDTO GetCategoryById(int id);
-        IEnumerable<Brand> GetBrands();
+        IEnumerable<BrandDTO> GetBrands();
 
         BrandDTO GetBrandById(int id);
         IEnumerable<ProductDTO> GetProducts(ProductFilter filter);
