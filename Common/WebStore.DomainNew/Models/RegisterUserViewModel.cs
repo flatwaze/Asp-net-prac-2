@@ -8,13 +8,13 @@ namespace WebStore.Models
 {
     public class RegisterUserViewModel
     {
-        [Required, MaxLength(256)]
+        [Required(ErrorMessage = "Login required"), MaxLength(256)]
         public string UserName { get; set; }
 
-        [Required, DataType(DataType.EmailAddress)]
+        [Required(ErrorMessage = "Email required"), DataType(DataType.EmailAddress)]
         public string Email { get; set; }
 
-        [Required, DataType(DataType.Password)]
+        [Required(ErrorMessage = "Password Required"), DataType(DataType.Password)]
         public string Password { get; set; }
 
         [DataType(DataType.Password), Compare(nameof(Password))]
